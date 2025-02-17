@@ -5,6 +5,7 @@ export default function GamePage() {
   const [questions, setQuestions] = useState([]);
   const [cash, setCash] = useState(1000);
   const [questionNumber, setQuestionNumber] = useState(0);
+  const [submited, setSubmited] = useState(false);
   useEffect(() => {
     getQuestions().then((data) => {
       console.log(data.answers);
@@ -21,6 +22,9 @@ export default function GamePage() {
   }, [])
   const removeCash = (id,questionCash,e) => {
     e.preventDefault();
+    if(submited){
+      return;
+    }
     if(questions[questionNumber].answers[id].cash<questionCash){
       return;
     }
@@ -33,6 +37,9 @@ export default function GamePage() {
     });
   }
   const addCash = (id,questionCash) => {
+    if(submited){
+      return;
+    }
     if(cash<questionCash){
       return;
     }
@@ -45,11 +52,30 @@ export default function GamePage() {
     });
     
   }
+  const handleSubmit = () => {
+    setSubmited(true);
+    setCash(
+      questions[questionNumber].answers[questions[questionNumber].correctAnswer].cash
+    );
+}
+const handleNext = () => {
+  if(questionNumber+1<questions.length){
+    setQuestionNumber(prevState=>{
+      return prevState+1;
+    });
+    setSubmited(false);
+  }
+  else{
+    console.log("end");
+  }
+}
+const handleReturn = () => { 
+}
   return questions.length===0?<div>loading...</div>:(
     <div>
       <div className={styles.userCash}>Cash: {cash}</div>
-      <h2>Question Number: {questionNumber+1}</h2>
-      <div>
+      <h2>Question Number: {questionNumber+1}/10</h2>
+      <div className={styles.questionBox}>
         <h1>{questions[questionNumber].question}</h1>
         <div className={styles.totalCashBet}>total cash bet: {
           questions[questionNumber].answers.reduce((acc,answer)=>{
@@ -59,8 +85,10 @@ export default function GamePage() {
         </div>
         <div className={styles.answerBox}>
         {
-          questions[questionNumber].answers.map((answer) => (
-            <div className={styles.answer} key={answer.name}>
+          questions[questionNumber].answers.map((answer,answerIndex) => (
+            <div 
+            className={styles.answer + " " + (submited?questions[questionNumber].correctAnswer===answerIndex?styles.correct:styles.wrong:null)}
+            key={answer.name}>
               <div className={styles.name}>{answer.name}</div>
               <div className={styles.answerBet}> cash bet: {answer.cash}
 
@@ -90,6 +118,31 @@ export default function GamePage() {
           ))
         }
         </div>
+        {
+          submited?
+          (
+            cash===0?(
+              <button className={styles.submitButton} onClick={handleReturn}>
+                Return to home page
+              </button>
+            ):
+          (
+            <div>
+                <div className={styles.savedCashInfo}>
+                  saved cash:  {
+                    questions[questionNumber].answers[questions[questionNumber].correctAnswer].cash
+                  }
+              </div>
+              <button className={styles.submitButton} onClick={handleNext}>Next</button>
+
+
+              </div>
+          )
+        ):
+          <button className={styles.submitButton} onClick={handleSubmit}>Submit</button>
+
+}
+
       </div>
     </div>
   )

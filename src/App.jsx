@@ -14,27 +14,29 @@ function App() {
     console.log(nickname);
     setPage("game");
   }
-  return (
-    <PageContext.Provider value={{
-      startGame:startGame
-    }}
-    >
-    <div>
-      {
-        page === "start"? (
-          <StartPage />
-        ):
-        page === "game"? (
-          <GamePage />
-        ):
-        page === "end"? (
-          <EndingPage/>
-        ):
-        null
-      }
-    </div>
+//   return (
+//     <PageContext.Provider value={{
+//       startGame:startGame
+//     }}
+//     >
+//     <div>
+//       {
+//         page === "start"? (
+//           <StartPage />
+//         ):
+//         page === "game"? (
+//           <GamePage />
+//         ):
+//         page === "end"? (
+//           <EndingPage/>
+//         ):
+//         null
+//       }
+//     </div>
   
-  </PageContext.Provider>
-)}
+//   </PageContext.Provider>
+// )
+return <GamePage />
+}
 
 export default App
